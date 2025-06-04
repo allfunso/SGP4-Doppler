@@ -1,33 +1,12 @@
-def install_libraries():
-
-    import importlib
-    import subprocess
-    import sys
-
-    required_packages = [
-        'numpy',
-        'pandas',
-        'matplotlib',
-        'skyfield',
-        'cartopy'
-    ]
-
-    for package in required_packages:
-        if importlib.util.find_spec(package) is None:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-
-    print("Libraries installed correctly")
-
-install_libraries()
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from skyfield.api import load, EarthSatellite, Topos
+from datetime import datetime, timedelta, timezone
+import cartopy
 
 def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg, argp_deg, mean_anomaly_deg,
                       step_seconds, simulated_days, initial_latitude_deg, initial_longitude_deg):
-
-    import numpy as np
-    import pandas as pd
-    from skyfield.api import load, EarthSatellite, Topos
-    from datetime import datetime, timedelta, timezone
-
 
     # Orbital Parameters ================================================================================================================ #
     earth_radius_m = 6371 * 1000
