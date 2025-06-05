@@ -16,6 +16,7 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
     orbital_period = np.sqrt(4 * np.pi**2 * semi_major_axis**3 / GM)
     orbits_per_day = (24 * 3600) / orbital_period
 
+    # Create TLE set
     epoch = datetime.now(timezone.utc).strftime("%y%j.%f")[:14]
     tle_line1 = f"1 99999U 20001A   {epoch}  .00000000  00000-0  00000 0  9999"
     tle_line2 = f"2 99999 {inclination_deg:8.4f} {raan_deg:8.4f} {int(eccentricity * 1e7):07d} {argp_deg:8.4f} {mean_anomaly_deg:8.4f} {orbits_per_day}"
@@ -58,14 +59,16 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
         latitudes.append(subpoint.latitude.degrees)
         longitudes.append(subpoint.longitude.degrees)
         altitudes.append(subpoint.elevation.km)
-        photo_flags.append(1 if -60 <= subpoint.latitude.degrees <= -40 else 0)
+
+        # Captura de fotografías
+        photo_flags.append(1 if -60 <= subpoint.latitude.degrees <= -40 else 0) # Latitudes de interés para la misión
         speed = np.linalg.norm(geocentric.velocity.km_per_s)
         speeds.append(speed)
 
         # Comunicación con estación terrestre
         difference = satellite - ground_station
         alt, az, distance = difference.at(t).altaz()
-        comm_flags.append(1 if alt.degrees >= 10 else 0)
+        comm_flags.append(1 if alt.degrees >= 10 else 0) # Rango de comunicación de estación en Tierra
 
 
     # Save Data ========================================================================================================================= #
@@ -81,20 +84,6 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
 
     df.to_csv('ground_track.csv', index=False)
 
-# ====================================================================================================================================== #
-
-Orbit_Propagation(
-    orbit_altitude_km = 650,
-    eccentricity      = 0,
-    inclination_deg   = 97.5,
-    raan_deg          = 190,
-    argp_deg          = 45,
-    mean_anomaly_deg  = 0,
-    step_seconds      = 10,
-    simulated_days    = 1,
-    initial_latitude_deg = -30,
-    initial_longitude_deg = -75
-)
 
 def Deliver_Data(current_time):
 
@@ -115,26 +104,3 @@ def Deliver_Data(current_time):
   return timestamp, latitude, longitude, altitude, speed, photo, comm_window
 
 
-if latitude or longitude == None:
-
-  import pandas as pd
-
-  df = pd.read_csv('ground_track.csv')
-
-  time_index = df[df['timestamp'] == current_time].index[0]
-
-  latitude    = df['latitude_deg'][time_index]
-  longitude   = df['longitude_deg'][time_index]
-
-  Orbit_Propagation(
-    latitude,
-    longitude,
-    orbit_altitude_km = 650,
-    eccentricity      = 0,
-    inclination_deg   = 97.5,
-    raan_deg          = 190,
-    argp_deg          = 45,
-    mean_anomaly_deg  = 0,
-    step_seconds      = 1,
-    simulated_days    = 1
-  )
