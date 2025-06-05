@@ -38,6 +38,7 @@ df = pd.read_csv('ground_track.csv')
 
 
 communication_df = df.loc[df['comm_window'] == 1]
+communication_df = communication_df.copy()
 communication_df['timestamp'] = pd.to_datetime(communication_df['timestamp'])
 communication_df['altitude'] = communication_df['altitude_km'] * 1000
 
@@ -112,5 +113,5 @@ plt.show()
 
 # Stub for generating a TLE
 now = datetime.utcnow()
-tle_template = f"""1 99999U 23001A   {now.strftime('%y%j')}.00000000  .00000000  00000-0  00000-0 0  9990\n2 99999 {98.0000:8.4f} {0.0000:8.4f} 0000001  0.0000  0.0000 {15.00000000:11.8f}    00"""
-print("\nGenerated TLE (stub):\n", tle_template)
+tle_template = f"""1 99999U 25001A   {now.strftime('%y%j')}.00000000  .00000000  00000-0  00000-0 0  9990\n2 99999 {98.0000:8.4f} {0.0000:8.4f} 0000001  0.0000  0.0000 {15.00000000:11.8f}    00"""
+print(f"Generated TLE set (stub):\n {tle_template}")
