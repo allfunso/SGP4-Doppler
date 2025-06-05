@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import cartopy
 
 def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg, argp_deg, mean_anomaly_deg,
-                      step_seconds, simulated_days, initial_latitude_deg, initial_longitude_deg):
+                      step_seconds, simulated_days, initial_latitude_deg, initial_longitude_deg, gs_position):
 
     # Orbital Parameters ================================================================================================================ #
     earth_radius_m = 6371 * 1000
@@ -50,8 +50,8 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
     # Propagate Orbit =================================================================================================================== #
     timestamps, latitudes, longitudes, altitudes, speeds, photo_flags, comm_flags = [], [], [], [], [], [], []
 
-    ground_station_lat = 25.67507
-    ground_station_lon = -100.31847
+    ground_station_lat = gs_position[0]
+    ground_station_lon = gs_position[1]
     ground_station = Topos(latitude_degrees=ground_station_lat, longitude_degrees=ground_station_lon)
 
     for t in future_times:
