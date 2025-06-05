@@ -58,7 +58,21 @@ plt.legend()
 plt.show()
 
 # Stub for generating a TLE
-epoch = datetime.now(timezone.utc).strftime("%y%j.%f")[:14]
-tle_1 = f"1 99999U 25001A   {epoch}  .00000000  .00000000  00000-0  00000-0 0  9990"
-tle_2 = f"2 99999 {98.0000:8.4f} {0.0000:8.4f} 0000001  0.0000  0.0000 {15.00000000:11.8f}    00"
+orbit_altitude_km = 650 # To calculate
+eccentricity      = 0 # Should stay the same
+inclination_deg   = 97.5 # Should stay the same
+raan_deg          = 190 # To calculate
+argp_deg          = 45 # To calculate
+mean_anomaly_deg  = 0 # To calculate
+
+earth_radius_m = 6371 * 1000
+semi_major_axis = (earth_radius_m + orbit_altitude_km * 1000)
+GM = 3.986004418e14
+
+orbital_period = np.sqrt(4 * np.pi**2 * semi_major_axis**3 / GM)
+orbits_per_day = (24 * 3600) / orbital_period
+
+epoch = (datetime.now(timezone.utc).strftime("%y%j.%f") + "00")[:14]
+tle_1 = f"1 99999U 25001A   {epoch}  .00000000  00000-0  00000-0 0  9990"
+tle_2 = f"2 99999 {inclination_deg:8.4f} {raan_deg:8.4f} {int(eccentricity * 1e7):07d} {argp_deg:8.4f} {mean_anomaly_deg:8.4f} {orbits_per_day}"
 print(f"Generated TLE set (stub): \n\t{tle_1}\n\t{tle_2}")

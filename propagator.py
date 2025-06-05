@@ -17,11 +17,13 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
     orbits_per_day = (24 * 3600) / orbital_period
 
     # Create TLE set
-    epoch = datetime.now(timezone.utc).strftime("%y%j.%f")[:14]
-    tle_line1 = f"1 99999U 25001A   {epoch}  .00000000  00000-0  00000 0  9999"
-    tle_line2 = f"2 99999 {inclination_deg:8.4f} {raan_deg:8.4f} {int(eccentricity * 1e7):07d} {argp_deg:8.4f} {mean_anomaly_deg:8.4f} {orbits_per_day}"
+    epoch = (datetime.now(timezone.utc).strftime("%y%j.%f") + "00")[:14]
+    tle_line1 = f"1 99999U 25001A   {epoch}  .00000000  00000-0  00000-0 0  9990"
+    tle_line2 = f"2 99999 {inclination_deg:8.4f} {raan_deg:8.4f} {int(eccentricity * 1e7):07d} {argp_deg:8.4f} {mean_anomaly_deg:8.4f} {orbits_per_day:11.8f}000010"
 
     print(f"Starting TLE set: \n\t{tle_line1}\n\t{tle_line2}\n")
+    print(len(tle_line1))
+    print(len(tle_line2))
 
     ts = load.timescale()
     satellite = EarthSatellite(tle_line1, tle_line2, "DemoSat", ts)
