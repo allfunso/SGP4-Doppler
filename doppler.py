@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from datetime import datetime, timedelta
+import pandas as pd
 
 # Constants
 c = 299792458  # Speed of light (m/s)
@@ -10,7 +11,7 @@ f0 = 437e6     # Base frequency (Hz), e.g. UHF
 # Station location
 latitude = 26
 longitude = -100
-altitude = 6378137.0 + 2
+altitude = 6378137.0 + 2100
 
 # Convert (lat, lon) to ECEF
 def geodetic_to_ecef(latitude, longitude, altitude):
@@ -31,13 +32,40 @@ def geodetic_to_ecef(latitude, longitude, altitude):
 # Ground station position (ECEF, meters)
 gs_position = geodetic_to_ecef(latitude, longitude, altitude)
 
-# Simulate satellite pass (straight-line motion overhead)
-def simulate_pass(duration_sec=600, sample_rate=1.0):
-    t = np.arange(0, duration_sec, 1/sample_rate)
-    satellite_velocity = np.array([0, 7600, 0])  # Rough orbital velocity in m/s
-    sat_initial_pos = np.array([0, -3000e3, 500e3])
-    sat_positions = sat_initial_pos[np.newaxis, :] + t[:, np.newaxis] * satellite_velocity
-    return t, sat_positions
+#---------------------------
+
+df = pd.read_csv('ground_track.csv')
+
+
+communication_df = df.loc[df['comm_window'] == 1]
+communication_df['timestamp'] = pd.to_datetime(communication_df['timestamp'])
+communication_df['altitude'] = communication_df['altitude_km'] * 1000
+
+# Convert lat/lon/alt of satellite to ECEF
+def df_to_ecef_positions(df):
+    ecef_positions = []
+    for _, row in df.iterrows():
+        ecef = geodetic_to_ecef(row['latitude_deg'], row['longitude_deg'], row['altitude'])
+        ecef_positions.append(ecef)
+    return np.array(ecef_positions)
+
+# Verify the data belongs to the same pass
+pass_df = pd.DataFrame(columns=communication_df.columns)
+idx = 0
+while idx < len(communication_df.index):
+    if (communication_df.iloc[idx + 1]['timestamp'] - communication_df.iloc[idx]['timestamp']) > timedelta(minutes=60):
+        break
+    pass_df.loc[idx] = communication_df.iloc[idx]
+    idx += 1
+
+def timestamps_to_seconds(df):
+    base_time = pd.to_datetime(df['timestamp'].iloc[0])
+    t_seconds = (pd.to_datetime(df['timestamp']) - base_time).dt.total_seconds().values
+    return t_seconds
+
+# Get satellite positions and time vector from the dataframe
+sat_positions = df_to_ecef_positions(pass_df)
+t = timestamps_to_seconds(pass_df)
 
 def compute_doppler_shift(sat_positions, gs_position):
     relative_vectors = sat_positions - gs_position
@@ -64,7 +92,6 @@ def fit_orbit(t, observed_freqs):
     return result.x
 
 # Main simulation
-t, sat_positions = simulate_pass()
 observed_freqs = compute_doppler_shift(sat_positions, gs_position)
 
 # Add noise

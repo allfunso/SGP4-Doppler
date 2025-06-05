@@ -1,5 +1,7 @@
 from propagator import Orbit_Propagation, Deliver_Data
+from doppler import geodetic_to_ecef, df_to_ecef_positions
 import pandas as pd
+from datetime import timedelta
 
 Orbit_Propagation(
     orbit_altitude_km = 650,
@@ -13,12 +15,6 @@ Orbit_Propagation(
     initial_latitude_deg = -30,
     initial_longitude_deg = -75
 )
-
-df = pd.read_csv('ground_track.csv')
-
-communication_df = df.loc[df["comm_window"] == 1]
-
-
 
 '''
 if latitude == None or longitude == None:
