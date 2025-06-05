@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import cartopy
 
 def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg, argp_deg, mean_anomaly_deg,
-                      step_seconds, simulated_days, initial_latitude_deg, initial_longitude_deg, gs_position):
+                      step_seconds, simulated_days, initial_latitude_deg, initial_longitude_deg, gs_position, latitude_range):
 
     # Orbital Parameters ================================================================================================================ #
     earth_radius_m = 6371 * 1000
@@ -63,7 +63,7 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
         altitudes.append(subpoint.elevation.km)
 
         # Captura de fotografías
-        photo_flags.append(1 if -60 <= subpoint.latitude.degrees <= -40 else 0) # Latitudes de interés para la misión
+        photo_flags.append(1 if latitude_range[0] <= subpoint.latitude.degrees <= latitude_range[1] else 0) # Latitudes de interés para la misión
         speed = np.linalg.norm(geocentric.velocity.km_per_s)
         speeds.append(speed)
 
