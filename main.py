@@ -1,4 +1,5 @@
 from propagator import Orbit_Propagation, Deliver_Data
+import pandas as pd
 
 Orbit_Propagation(
     orbit_altitude_km = 650,
@@ -12,6 +13,11 @@ Orbit_Propagation(
     initial_latitude_deg = -30,
     initial_longitude_deg = -75
 )
+
+df = pd.read_csv('ground_track.csv')
+
+communication_df = df.loc[df["comm_window"] == 1]
+
 
 
 '''

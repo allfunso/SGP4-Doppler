@@ -16,17 +16,20 @@ altitude = 6378137.0 + 2
 def geodetic_to_ecef(latitude, longitude, altitude):
     a = 6378137.0 # Earth's equatorial radius
     b = 6356752.3 # Earth's polar radius
-    e2 = 1 - a**2 / b**2 # Square of the first numerical eccentricity
-    def n_function(phi):
-        return a / np.sqrt(1 - e2 * np.sin(phi)**2)
+    e2 = 1 - b**2 / a**2 # Square of the first numerical eccentricity
 
-    x = (n_function(latitude) + altitude) * np.cos(latitude) * np.cos(longitude)
-    y = (n_function(latitude) + altitude) * np.cos(latitude) * np.sin(longitude)
-    z = (n_function(latitude) * (1 - e2)  + altitude) * np.sin(latitude)
-    return (x, y, z)
+    lat_rad = np.radians(latitude)
+    lon_rad = np.radians(longitude)
+
+    N = a / np.sqrt(1 - e2 * np.sin(lat_rad)**2)
+
+    x = (N + altitude) * np.cos(lat_rad) * np.cos(lon_rad)
+    y = (N + altitude) * np.cos(lat_rad) * np.sin(lon_rad)
+    z = (N * (1 - e2) + altitude) * np.sin(lat_rad)
+    return np.array([x, y, z])
 
 # Ground station position (ECEF, meters)
-gs_position = np.array(geodetic_to_ecef(latitude, longitude, altitude))
+gs_position = geodetic_to_ecef(latitude, longitude, altitude)
 
 # Simulate satellite pass (straight-line motion overhead)
 def simulate_pass(duration_sec=600, sample_rate=1.0):
