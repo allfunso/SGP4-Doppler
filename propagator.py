@@ -22,8 +22,6 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
     tle_line2 = f"2 99999 {inclination_deg:8.4f} {raan_deg:8.4f} {int(eccentricity * 1e7):07d} {argp_deg:8.4f} {mean_anomaly_deg:8.4f} {orbits_per_day:11.8f}000010"
 
     print(f"Starting TLE set: \n\t{tle_line1}\n\t{tle_line2}\n")
-    print(len(tle_line1))
-    print(len(tle_line2))
 
     ts = load.timescale()
     satellite = EarthSatellite(tle_line1, tle_line2, "DemoSat", ts)

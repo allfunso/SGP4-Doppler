@@ -6,7 +6,7 @@ gs_longitude = -100
 gs_altitude = 6378137.0 + 2100 # meters
 
 # Latitudes of interest
-latitude_range = (-40, -60)
+latitude_range = (-60, -40)
 
 Orbit_Propagation(
     orbit_altitude_km = 650,
