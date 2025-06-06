@@ -89,8 +89,6 @@ def Orbit_Propagation(orbit_altitude_km, eccentricity, inclination_deg, raan_deg
 
 def Deliver_Data(current_time):
 
-  import pandas as pd
-
   df = pd.read_csv(f'ground_track.csv')
 
   time_index = df[df['timestamp'] == current_time].index[0]
