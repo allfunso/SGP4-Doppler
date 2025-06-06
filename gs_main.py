@@ -49,7 +49,7 @@ print(f"Estimated Velocity (m/s): {estimated_velocity}\n")
 
 # Plot
 plt.plot(t, observed_freqs, label='Observed Frequency')
-plt.hlines(f0, t[0], t[-1], colors='red', linestyles='dashed')
+plt.hlines(f0, t[0], t[-1], colors='red', linestyles='dashed', label='Expected Frequency')
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
 plt.title('Simulated Doppler Shift')
