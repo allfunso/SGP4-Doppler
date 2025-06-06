@@ -41,7 +41,7 @@ def compute_doppler_shift(sat_positions, gs_position, f0):
     relative_vectors = sat_positions - gs_position
     distances = np.linalg.norm(relative_vectors, axis=1)
     radial_velocities = np.gradient(distances)
-    doppler_shifts = f0 * (radial_velocities / c)
+    doppler_shifts = - (radial_velocities / c) * f0
     observed_freqs = f0 + doppler_shifts
     return observed_freqs
 
